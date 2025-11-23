@@ -169,14 +169,21 @@ class Visualization {
     drawLunarModule() {
         // Calculate LM position
         const surfaceY = this.height - 100;
-        const maxDisplayAlt = 400; // Max altitude to show in viewport
         
-        // Scale altitude to screen position
+        // Improved scaling for better visibility of descent
+        // Use dynamic viewport based on current altitude
         let lmY;
-        if (this.agc.altitude > maxDisplayAlt) {
-            lmY = 50; // Keep at top if very high
+        if (this.agc.altitude > 10000) {
+            // High altitude - show full range
+            const maxAlt = 50000;
+            lmY = surfaceY - (this.agc.altitude / maxAlt) * (surfaceY - 50);
+        } else if (this.agc.altitude > 1000) {
+            // Medium altitude - zoom in more
+            const altRatio = this.agc.altitude / 10000;
+            lmY = surfaceY - altRatio * (surfaceY - 100);
         } else {
-            lmY = surfaceY - (this.agc.altitude / maxDisplayAlt) * (surfaceY - 50);
+            // Low altitude - show precise positioning
+            lmY = surfaceY - (this.agc.altitude / 1000) * (surfaceY - 200);
         }
         
         // Horizontal position (affected by horizontal velocity)
@@ -238,36 +245,6 @@ class Visualization {
         if (this.agc.horizontalVel > 1) {
             this.ctx.fillStyle = 'rgba(255, 255, 100, 0.6)';
             this.ctx.fillRect(lmX + lmSize/2, lmY, 8, 3);
-        }
-        
-        // Velocity vector indicator
-        if (this.agc.running) {
-            this.ctx.strokeStyle = '#00ffff';
-            this.ctx.lineWidth = 2;
-            this.ctx.beginPath();
-            this.ctx.moveTo(lmX, lmY);
-            
-            // Scale velocity for display
-            const velX = -this.agc.horizontalVel * 0.5;
-            const velY = -this.agc.velocity * 0.5;
-            
-            this.ctx.lineTo(lmX + velX, lmY + velY);
-            this.ctx.stroke();
-            
-            // Arrow head
-            const angle = Math.atan2(velY, velX);
-            this.ctx.beginPath();
-            this.ctx.moveTo(lmX + velX, lmY + velY);
-            this.ctx.lineTo(
-                lmX + velX - 10 * Math.cos(angle - Math.PI/6),
-                lmY + velY - 10 * Math.sin(angle - Math.PI/6)
-            );
-            this.ctx.lineTo(
-                lmX + velX - 10 * Math.cos(angle + Math.PI/6),
-                lmY + velY - 10 * Math.sin(angle + Math.PI/6)
-            );
-            this.ctx.closePath();
-            this.ctx.fill();
         }
     }
     

@@ -147,29 +147,32 @@ class AGC {
     // P63 Braking guidance (simplified from LUNAR_LANDING_GUIDANCE_EQUATIONS.agc)
     brakingGuidance(dt) {
         // Calculate time to fall (TTF/8 in original AGC)
-        // This is a simplified calculation
         if (this.velocity < 0) {
             this.ttf = Math.abs(this.altitude / this.velocity) * 0.8;
         } else {
             this.ttf = 100;
         }
         
-        // Target a smooth descent profile
-        // Target velocity based on altitude - slow down as we get lower
+        // Target descent profile for P63: slow down to about 120 ft/s
         let targetVel;
         if (this.altitude > 30000) {
-            targetVel = -350; // High altitude descent
+            targetVel = -200; // Initial high altitude descent
         } else if (this.altitude > 15000) {
-            targetVel = -Math.sqrt(this.altitude) * 1.5; // Medium descent
+            targetVel = -150; // Medium altitude descent
+        } else if (this.altitude > 7500) {
+            targetVel = -120; // Target ~120 ft/s for P63 end phase
         } else {
-            targetVel = -Math.sqrt(this.altitude) * 1.0; // Slower descent
+            targetVel = -100; // Transition to approach
         }
         
+        // Calculate velocity error (negative means we're going too fast down)
         const velError = this.velocity - targetVel;
         
-        // Calculate required thrust with stronger control
-        // F = m*a, where a = g + (desired acceleration)
-        const desiredAccel = velError * 2.0; // Strong proportional control
+        // Desired acceleration (positive = need to slow down)
+        // Much stronger control gain to aggressively slow down
+        const desiredAccel = -velError * 2.0; // Strong control gain
+        
+        // Total required thrust: overcome gravity + provide desired acceleration
         const requiredThrust = this.mass * (this.LUNAR_GRAVITY + desiredAccel);
         
         // Set throttle (10% to 100%)
