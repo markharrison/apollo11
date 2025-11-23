@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo 11 AGC/DSKY - Lunar Landing Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Apollo 11 AGC/DSKY - Lunar Landing Simulation</h1>
+            <p>Experience the Apollo 11 lunar module landing with an authentic DSKY interface</p>
+        </header>
+
+        <div class="main-content">
+            <!-- DSKY Interface (Left Side) -->
+            <div class="dsky-container">
+                <div class="dsky">
+                    <div class="dsky-header">
+                        <h2>DSKY</h2>
+                        <div class="dsky-status-lights">
+                            <div class="status-light" id="uplink-light">UPLINK ACTY</div>
+                            <div class="status-light" id="temp-light">TEMP</div>
+                            <div class="status-light" id="gimbal-lock-light">GIMBAL LOCK</div>
+                            <div class="status-light" id="prog-light">PROG</div>
+                            <div class="status-light" id="restart-light">RESTART</div>
+                            <div class="status-light" id="tracker-light">TRACKER</div>
+                            <div class="status-light" id="alt-light">ALT</div>
+                            <div class="status-light" id="vel-light">VEL</div>
+                        </div>
+                    </div>
+
+                    <div class="dsky-display">
+                        <div class="display-row">
+                            <span class="display-label">PROG</span>
+                            <span class="display-value" id="prog-display">63</span>
+                        </div>
+                        <div class="display-row">
+                            <span class="display-label">VERB</span>
+                            <span class="display-value" id="verb-display">16</span>
+                        </div>
+                        <div class="display-row">
+                            <span class="display-label">NOUN</span>
+                            <span class="display-value" id="noun-display">63</span>
+                        </div>
+                        <div class="display-separator"></div>
+                        <div class="display-row register">
+                            <span class="display-label">R1</span>
+                            <span class="display-value register-value" id="r1-display">+00000</span>
+                        </div>
+                        <div class="display-row register">
+                            <span class="display-label">R2</span>
+                            <span class="display-value register-value" id="r2-display">+00000</span>
+                        </div>
+                        <div class="display-row register">
+                            <span class="display-label">R3</span>
+                            <span class="display-value register-value" id="r3-display">+00000</span>
+                        </div>
+                    </div>
+
+                    <div class="dsky-keyboard">
+                        <div class="keyboard-row">
+                            <button class="key-btn" data-key="VERB">VERB</button>
+                            <button class="key-btn" data-key="NOUN">NOUN</button>
+                            <button class="key-btn" data-key="+" title="Plus">+</button>
+                            <button class="key-btn" data-key="-" title="Minus">-</button>
+                            <button class="key-btn" data-key="0">0</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key-btn" data-key="7">7</button>
+                            <button class="key-btn" data-key="8">8</button>
+                            <button class="key-btn" data-key="9">9</button>
+                            <button class="key-btn special-key" data-key="CLR">CLR</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key-btn" data-key="4">4</button>
+                            <button class="key-btn" data-key="5">5</button>
+                            <button class="key-btn" data-key="6">6</button>
+                            <button class="key-btn special-key" data-key="PRO">PRO</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key-btn" data-key="1">1</button>
+                            <button class="key-btn" data-key="2">2</button>
+                            <button class="key-btn" data-key="3">3</button>
+                            <button class="key-btn special-key" data-key="KEY REL">KEY REL</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key-btn special-key" data-key="ENTR">ENTR</button>
+                            <button class="key-btn special-key" data-key="RSET">RSET</button>
+                        </div>
+                    </div>
+
+                    <div class="dsky-info">
+                        <p><strong>Quick Start:</strong></p>
+                        <ul>
+                            <li>Program 63 (P63) is running - Lunar Landing Braking Phase</li>
+                            <li>V16N63 displays altitude, velocity, and fuel</li>
+                            <li>Use keyboard or mouse to interact with DSKY</li>
+                            <li>Adjust time slider to control simulation speed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Landing Visualization (Right Side) -->
+            <div class="visualization-container">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="time-slider">Simulation Speed: <span id="speed-display">1x</span></label>
+                        <input type="range" id="time-slider" min="1" max="20" value="1" step="1">
+                    </div>
+                    <div class="control-group">
+                        <button id="reset-btn" class="control-btn">Reset Simulation</button>
+                        <button id="toggle-sim-btn" class="control-btn">Pause</button>
+                    </div>
+                </div>
+
+                <canvas id="landing-canvas" width="800" height="600"></canvas>
+
+                <div class="telemetry">
+                    <h3>Telemetry Data</h3>
+                    <div class="telemetry-grid">
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Altitude:</span>
+                            <span class="telemetry-value" id="telem-altitude">50000 ft</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Vertical Velocity:</span>
+                            <span class="telemetry-value" id="telem-velocity">-150 ft/s</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Horizontal Velocity:</span>
+                            <span class="telemetry-value" id="telem-h-velocity">300 ft/s</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Fuel Remaining:</span>
+                            <span class="telemetry-value" id="telem-fuel">100%</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Engine Thrust:</span>
+                            <span class="telemetry-value" id="telem-thrust">0%</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Mission Time:</span>
+                            <span class="telemetry-value" id="telem-time">00:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="agc-sim.js"></script>
+    <script src="dsky.js"></script>
+    <script src="visualization.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

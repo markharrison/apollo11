@@ -1,0 +1,412 @@
+/* Apollo 11 AGC/DSKY Simulation - Styles */
+
+:root {
+    --dsky-bg: #1a1a1a;
+    --dsky-panel: #2a2a2a;
+    --display-bg: #000000;
+    --display-green: #00ff00;
+    --display-amber: #ffbf00;
+    --button-bg: #444444;
+    --button-hover: #555555;
+    --button-active: #666666;
+    --text-light: #e0e0e0;
+    --border-color: #555555;
+    --status-light-off: #333333;
+    --status-light-on: #ff0000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(42, 42, 42, 0.5);
+    border-radius: 10px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: var(--display-green);
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+header p {
+    font-size: 1.1em;
+    color: var(--text-light);
+}
+
+.main-content {
+    display: flex;
+    gap: 30px;
+    min-height: 700px;
+}
+
+/* DSKY Container */
+.dsky-container {
+    flex: 0 0 500px;
+}
+
+.dsky {
+    background: var(--dsky-bg);
+    border: 3px solid var(--border-color);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dsky-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.dsky-header h2 {
+    font-size: 2em;
+    color: var(--display-green);
+    margin-bottom: 15px;
+    letter-spacing: 5px;
+}
+
+/* Status Lights */
+.dsky-status-lights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.status-light {
+    background: var(--status-light-off);
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.7em;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.status-light.active {
+    background: var(--status-light-on);
+    color: white;
+    box-shadow: 0 0 10px var(--status-light-on);
+}
+
+/* DSKY Display */
+.dsky-display {
+    background: var(--display-bg);
+    border: 3px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.display-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.display-row.register {
+    font-size: 1.4em;
+}
+
+.display-label {
+    color: var(--display-amber);
+    font-weight: bold;
+    min-width: 80px;
+}
+
+.display-value {
+    color: var(--display-green);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+    text-align: right;
+    flex: 1;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.register-value {
+    font-size: 1.3em;
+    letter-spacing: 5px;
+}
+
+.display-separator {
+    height: 2px;
+    background: var(--border-color);
+    margin: 15px 0;
+}
+
+/* DSKY Keyboard */
+.dsky-keyboard {
+    margin-bottom: 20px;
+}
+
+.keyboard-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.key-btn {
+    flex: 1;
+    padding: 15px 10px;
+    background: var(--button-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.key-btn:hover {
+    background: var(--button-hover);
+    border-color: var(--display-green);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.key-btn:active,
+.key-btn.pressed {
+    background: var(--button-active);
+    transform: translateY(2px);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.key-btn.special-key {
+    background: #555555;
+    font-size: 0.8em;
+}
+
+/* DSKY Info */
+.dsky-info {
+    background: var(--dsky-panel);
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    line-height: 1.6;
+}
+
+.dsky-info strong {
+    color: var(--display-green);
+}
+
+.dsky-info ul {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.dsky-info li {
+    margin-bottom: 5px;
+}
+
+/* Visualization Container */
+.visualization-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.controls {
+    background: var(--dsky-panel);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-group label {
+    font-size: 0.9em;
+    color: var(--display-amber);
+}
+
+#time-slider {
+    width: 250px;
+    height: 8px;
+    background: var(--button-bg);
+    outline: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#time-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--display-green);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+#time-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--display-green);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    border: none;
+}
+
+.control-btn {
+    padding: 12px 24px;
+    background: var(--button-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: var(--button-hover);
+    border-color: var(--display-green);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.control-btn:active {
+    transform: translateY(2px);
+}
+
+/* Canvas */
+#landing-canvas {
+    width: 100%;
+    max-width: 800px;
+    height: 600px;
+    background: #000000;
+    border: 3px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Telemetry */
+.telemetry {
+    background: var(--dsky-panel);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.telemetry h3 {
+    color: var(--display-green);
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.telemetry-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: var(--dsky-bg);
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.telemetry-label {
+    color: var(--display-amber);
+    font-weight: bold;
+}
+
+.telemetry-value {
+    color: var(--display-green);
+    font-family: 'Courier New', monospace;
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .dsky-container {
+        flex: 1;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .dsky {
+        padding: 15px;
+    }
+    
+    .key-btn {
+        padding: 12px 8px;
+        font-size: 0.8em;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #time-slider {
+        width: 100%;
+    }
+}
+
+/* Animation for landing message */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.landing-message {
+    animation: pulse 2s ease-in-out infinite;
+}
