@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo 11 Lunar Landing Simulation - AGC/DSKY</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Apollo 11 Lunar Module Landing Simulation</h1>
+            <p>AGC (Apollo Guidance Computer) DSKY Interface</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- DSKY Interface (Left Side) -->
+            <div class="dsky-panel">
+                <div class="dsky-header">DSKY</div>
+                
+                <!-- Indicator Lights -->
+                <div class="indicator-lights">
+                    <div class="light" id="uplink-acty">UPLINK ACTY</div>
+                    <div class="light" id="temp">TEMP</div>
+                    <div class="light" id="no-att">NO ATT</div>
+                    <div class="light" id="gimbal-lock">GIMBAL LOCK</div>
+                    <div class="light" id="stby">STBY</div>
+                    <div class="light" id="prog">PROG</div>
+                    <div class="light" id="key-rel">KEY REL</div>
+                    <div class="light" id="opr-err">OPR ERR</div>
+                    <div class="light" id="tracker">TRACKER</div>
+                    <div class="light" id="alt">ALT</div>
+                    <div class="light" id="vel">VEL</div>
+                </div>
+                
+                <!-- Main Display -->
+                <div class="display-section">
+                    <div class="comp-acty">
+                        <div class="light-indicator" id="comp-acty-light">COMP ACTY</div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="display-row">
+                            <span class="label">PROG</span>
+                            <div class="display" id="prog-display">00</div>
+                        </div>
+                        <div class="display-row">
+                            <span class="label">VERB</span>
+                            <div class="display" id="verb-display">00</div>
+                        </div>
+                        <div class="display-row">
+                            <span class="label">NOUN</span>
+                            <div class="display" id="noun-display">00</div>
+                        </div>
+                        <div class="display-row large">
+                            <span class="label">R1</span>
+                            <div class="display large-display" id="r1-display">+00000</div>
+                        </div>
+                        <div class="display-row large">
+                            <span class="label">R2</span>
+                            <div class="display large-display" id="r2-display">+00000</div>
+                        </div>
+                        <div class="display-row large">
+                            <span class="label">R3</span>
+                            <div class="display large-display" id="r3-display">+00000</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Keyboard -->
+                <div class="keyboard">
+                    <div class="key-row">
+                        <button class="key" data-key="VERB">VERB</button>
+                        <button class="key" data-key="NOUN">NOUN</button>
+                        <button class="key" data-key="NUM">+</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key num" data-key="7">7</button>
+                        <button class="key num" data-key="8">8</button>
+                        <button class="key num" data-key="9">9</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key num" data-key="4">4</button>
+                        <button class="key num" data-key="5">5</button>
+                        <button class="key num" data-key="6">6</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key num" data-key="1">1</button>
+                        <button class="key num" data-key="2">2</button>
+                        <button class="key num" data-key="3">3</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key" data-key="CLR">CLR</button>
+                        <button class="key num" data-key="0">0</button>
+                        <button class="key" data-key="MINUS">-</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key action" data-key="PRO">PRO</button>
+                        <button class="key action" data-key="KEY REL">KEY REL</button>
+                        <button class="key action" data-key="ENTR">ENTR</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key action" data-key="RSET">RSET</button>
+                    </div>
+                </div>
+                
+                <!-- Quick Start Buttons -->
+                <div class="quick-start">
+                    <h3>Quick Start Programs</h3>
+                    <button class="program-btn" data-prog="63">P63 - Braking Phase</button>
+                    <button class="program-btn" data-prog="64">P64 - Approach</button>
+                    <button class="program-btn" data-prog="65">P65 - Vertical Descent</button>
+                    <button class="program-btn" data-prog="66">P66 - Manual Landing</button>
+                    <button class="program-btn" data-prog="00">P00 - Standby</button>
+                </div>
+            </div>
+            
+            <!-- Lunar Landing Visualization (Right Side) -->
+            <div class="visualization-panel">
+                <h2>Lunar Module Landing View</h2>
+                <canvas id="landing-canvas" width="800" height="600"></canvas>
+                
+                <div class="telemetry">
+                    <h3>Telemetry Data</h3>
+                    <div class="telemetry-grid">
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Altitude:</span>
+                            <span class="telemetry-value" id="tel-altitude">50000 ft</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Velocity:</span>
+                            <span class="telemetry-value" id="tel-velocity">5000 ft/s</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Fuel:</span>
+                            <span class="telemetry-value" id="tel-fuel">100%</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Throttle:</span>
+                            <span class="telemetry-value" id="tel-throttle">0%</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Phase:</span>
+                            <span class="telemetry-value" id="tel-phase">Standby</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Time to Landing:</span>
+                            <span class="telemetry-value" id="tel-ttf">-- s</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sim-controls">
+                    <h3>Simulation Controls</h3>
+                    <div class="control-item">
+                        <label for="speed-slider">Speed: <span id="speed-value">1x</span></label>
+                        <input type="range" id="speed-slider" min="1" max="20" value="1" step="1">
+                    </div>
+                    <div class="control-buttons">
+                        <button id="pause-btn">Pause</button>
+                        <button id="reset-btn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="agc-core.js"></script>
+    <script src="dsky.js"></script>
+    <script src="landing-sim.js"></script>
+    <script src="visualization.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
