@@ -39,7 +39,7 @@ class AGCSimulator {
         this.lastUpdateTime = Date.now();
         
         // Landing thresholds
-        this.SAFE_LANDING_VELOCITY = 5;    // ft/s
+        this.SAFE_LANDING_VELOCITY = 10;    // ft/s (increased tolerance)
         this.TOUCHDOWN_ALTITUDE = 10;       // ft
         
         // Guidance parameters for P63
@@ -98,7 +98,7 @@ class AGCSimulator {
         
         // Calculate desired throttle based on velocity and altitude
         const velocityFactor = Math.abs(this.state.verticalVelocity) / 150;
-        const throttleTarget = Math.min(100, 40 + velocityFactor * 40);
+        const throttleTarget = Math.min(100, 50 + velocityFactor * 35);
         
         this.state.throttle = this.smoothThrottle(throttleTarget, 0.1);
     }
@@ -109,11 +109,11 @@ class AGCSimulator {
      */
     approachPhaseGuidance() {
         // Target: maintain controlled descent rate
-        const targetDescentRate = -50; // ft/s
+        const targetDescentRate = -40; // ft/s
         const velocityError = this.state.verticalVelocity - targetDescentRate;
         
         // PID-like control
-        const throttleTarget = 60 + velocityError * 2;
+        const throttleTarget = 70 + velocityError * 2.5;
         this.state.throttle = this.smoothThrottle(throttleTarget, 0.15);
     }
     
@@ -123,12 +123,12 @@ class AGCSimulator {
      */
     finalDescentGuidance() {
         // Target: gentle touchdown
-        const targetDescentRate = Math.max(-10, -this.state.altitude / 50);
+        const targetDescentRate = Math.max(-6, -this.state.altitude / 70);
         const velocityError = this.state.verticalVelocity - targetDescentRate;
         
         // More aggressive throttle control near surface
-        const throttleTarget = 85 + velocityError * 5;
-        this.state.throttle = this.smoothThrottle(throttleTarget, 0.2);
+        const throttleTarget = 92 + velocityError * 7;
+        this.state.throttle = this.smoothThrottle(throttleTarget, 0.25);
         
         // Reduce horizontal velocity
         if (Math.abs(this.state.horizontalVelocity) > 5) {
