@@ -7,7 +7,8 @@ class DSKYController {
     constructor(agcSimulator) {
         this.agc = agcSimulator;
         this.inputBuffer = '';
-        this.inputMode = null; // 'VERB' or 'NOUN'
+        this.inputMode = null; // 'VERB', 'NOUN', or 'PROGRAM'
+        this.waitingForProgram = false; // True after V37 is entered
         
         // DOM elements
         this.elements = {
@@ -61,6 +62,13 @@ class DSKYController {
      */
     initializeKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
+            // F1 hotkey to start P63
+            if (e.key === 'F1') {
+                this.startProgram63();
+                e.preventDefault();
+                return;
+            }
+            
             // Number keys
             if (e.key >= '0' && e.key <= '9') {
                 this.handleKeyPress(e.key);
@@ -162,9 +170,28 @@ class DSKYController {
     processInput() {
         if (this.inputBuffer.length === 0) return;
         
-        const value = parseInt(this.inputBuffer.replace(/[+-]/g, ''));
+        const value = parseInt(this.inputBuffer.replace(/[+-]/g, ''), 10);
+        
+        // Check if we're waiting for a program number after V37
+        if (this.waitingForProgram) {
+            this.loadProgram(value);
+            this.waitingForProgram = false;
+            this.inputBuffer = '';
+            this.inputMode = null;
+            return;
+        }
         
         if (this.inputMode === 'VERB') {
+            // V37 is the verb to change programs
+            if (value === 37) {
+                this.waitingForProgram = true;
+                this.inputBuffer = '';
+                this.elements.prog.textContent = '--';
+                this.flashDisplay(this.elements.prog);
+                console.log('Enter program number...');
+                return;
+            }
+            
             this.agc.processDSKYInput(value, null);
             this.elements.verb.textContent = this.formatNumber(value, 2);
             this.flashDisplay(this.elements.verb);
@@ -179,11 +206,38 @@ class DSKYController {
     }
     
     /**
+     * Load a new program
+     */
+    loadProgram(programNumber) {
+        console.log('Loading program:', programNumber);
+        
+        if (programNumber === 63) {
+            this.startProgram63();
+        } else {
+            console.log(`Program ${programNumber} not implemented in this simulation`);
+            this.elements.prog.textContent = this.formatNumber(this.agc.state.currentProgram, 2);
+        }
+    }
+    
+    /**
+     * Start Program 63 (lunar landing)
+     */
+    startProgram63() {
+        console.log('Starting P63 - Lunar Landing');
+        this.agc.reset();
+        this.elements.prog.textContent = '63';
+        this.elements.verb.textContent = '16';
+        this.elements.noun.textContent = '63';
+        this.flashDisplay(this.elements.prog);
+    }
+    
+    /**
      * Clear input buffer
      */
     clearInput() {
         this.inputBuffer = '';
         this.inputMode = null;
+        this.waitingForProgram = false;
     }
     
     /**
@@ -308,6 +362,17 @@ class DSKYController {
     update() {
         this.updateRegisters();
         this.updateStatusLights();
+        this.updateProgramDisplay();
+    }
+    
+    /**
+     * Update program display
+     */
+    updateProgramDisplay() {
+        const state = this.agc.getState();
+        if (!this.waitingForProgram) {
+            this.elements.prog.textContent = this.formatNumber(state.currentProgram, 2);
+        }
     }
 }
 

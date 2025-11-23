@@ -23,9 +23,9 @@ class AGCSimulator {
             crashed: false,
             
             // AGC program state
-            currentProgram: 63,        // P63 = Braking Phase
+            currentProgram: 63,        // P63 = Braking Phase, P64 = Approach, P66 = ROD
             currentVerb: 16,           // V16 = Monitor decimal display
-            currentNoun: 63,           // N63 = LR altitude, altitude rate, LR range
+            currentNoun: 63,           // N63 = LR altitude, altitude rate, fuel
             
             // Physical constants
             lunarGravity: 5.31,        // ft/s^2 (1/6 of Earth)
@@ -71,18 +71,32 @@ class AGCSimulator {
     }
     
     /**
-     * AGC Guidance Computer - P63 Landing Phase
-     * Simulates the actual Apollo 11 landing guidance
+     * AGC Guidance Computer - Landing Programs
+     * P63: Braking Phase (>7500 ft)
+     * P64: Approach Phase (7500-500 ft)
+     * P66: ROD - Rate of Descent (<500 ft)
      */
     runGuidance(deltaTime) {
-        // Determine which phase of landing we're in
+        // Determine which program/phase we're in based on altitude
         if (this.state.altitude > 7500) {
+            if (this.state.currentProgram !== 63) {
+                this.state.currentProgram = 63;
+                console.log('Switched to P63 - Braking Phase');
+            }
             this.guidancePhase = 'BRAKING';
             this.brakingPhaseGuidance();
         } else if (this.state.altitude > 500) {
+            if (this.state.currentProgram !== 64) {
+                this.state.currentProgram = 64;
+                console.log('Switched to P64 - Approach Phase');
+            }
             this.guidancePhase = 'APPROACH';
             this.approachPhaseGuidance();
         } else {
+            if (this.state.currentProgram !== 66) {
+                this.state.currentProgram = 66;
+                console.log('Switched to P66 - ROD (Rate of Descent)');
+            }
             this.guidancePhase = 'FINAL';
             this.finalDescentGuidance();
         }
@@ -225,12 +239,12 @@ class AGCSimulator {
      * Get DSKY register values based on current Verb/Noun
      */
     getDSKYRegisters() {
-        // V16N63: Monitor altitude, altitude rate, and range
+        // V16N63: Monitor altitude, velocity (descent rate), and fuel
         if (this.state.currentVerb === 16 && this.state.currentNoun === 63) {
             return {
-                r1: Math.round(this.state.altitude),          // Altitude in feet
-                r2: Math.round(this.state.verticalVelocity),  // Vertical velocity in ft/s
-                r3: Math.round(this.state.fuelRemaining)      // Fuel remaining %
+                r1: Math.round(this.state.altitude),                    // R1: Altitude in feet
+                r2: Math.round(Math.abs(this.state.verticalVelocity)),  // R2: Speed (descent rate) in ft/s
+                r3: Math.round(this.state.fuelRemaining)                // R3: Fuel remaining %
             };
         }
         
