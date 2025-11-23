@@ -9,7 +9,7 @@ class AGCSimulator {
         this.state = {
             // Position and velocity (in feet and feet/second)
             altitude: 50000,           // feet above lunar surface
-            verticalVelocity: -150,    // feet/second (negative = descending)
+            verticalVelocity: -450,    // feet/second (negative = descending) - P63 starts from high orbital velocity
             horizontalVelocity: 300,   // feet/second
             horizontalDistance: 0,     // feet from landing site
             
@@ -29,9 +29,9 @@ class AGCSimulator {
             
             // Physical constants
             lunarGravity: 5.31,        // ft/s^2 (1/6 of Earth)
-            maxThrust: 10500,          // lbf (descent engine)
-            dryMass: 10000,            // lbs (LM without fuel)
-            fuelMass: 18000,           // lbs initial fuel
+            maxThrust: 10000,          // lbf (descent engine max - DPS)
+            dryMass: 9300,             // lbs (LM total dry mass)
+            fuelMass: 18000,           // lbs (descent propellant)
         };
         
         this.isPaused = false;
@@ -104,17 +104,21 @@ class AGCSimulator {
     
     /**
      * Braking Phase Guidance (High altitude)
-     * Reduces horizontal and vertical velocity
+     * P63: Reduce descent rate from ~450 ft/s to ~40-60 ft/s by 7500 ft
      */
     brakingPhaseGuidance() {
-        // Target: reduce velocity while conserving fuel
-        const altitudeRatio = this.state.altitude / 50000;
+        // P63 target: progressively reduce descent rate as we approach P64 altitude
+        // Target descent rate decreases linearly from 450 ft/s at 50000 ft to 60 ft/s at 7500 ft
+        const altitudeRatio = (this.state.altitude - 7500) / (50000 - 7500);
+        const targetDescentRate = -60 - (altitudeRatio * 390); // -60 to -450 ft/s
         
-        // Calculate desired throttle based on velocity and altitude
-        const velocityFactor = Math.abs(this.state.verticalVelocity) / 150;
-        const throttleTarget = Math.min(100, 50 + velocityFactor * 35);
+        // Control to match target descent rate
+        const velocityError = this.state.verticalVelocity - targetDescentRate;
         
-        this.state.throttle = this.smoothThrottle(throttleTarget, 0.1);
+        // High throttle to brake, reducing as we slow down
+        const throttleTarget = 85 - velocityError * 1.5;
+        
+        this.state.throttle = this.smoothThrottle(throttleTarget, 0.2);
     }
     
     /**
@@ -154,12 +158,15 @@ class AGCSimulator {
      * Smooth throttle changes to simulate realistic engine response
      */
     smoothThrottle(target, rate) {
+        // Clamp target to valid range (0-100%)
+        const clampedTarget = Math.max(0, Math.min(100, target));
+        
         const current = this.state.throttle;
-        const diff = target - current;
+        const diff = clampedTarget - current;
         const maxChange = rate * 100;
         
         if (Math.abs(diff) < maxChange) {
-            return target;
+            return clampedTarget;
         }
         
         return current + Math.sign(diff) * maxChange;
