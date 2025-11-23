@@ -27,9 +27,9 @@ class AGCSimulator {
             currentVerb: 16,           // V16 = Monitor decimal display
             currentNoun: 63,           // N63 = LR altitude, altitude rate, fuel
             
-            // Physical constants
+            // Physical constants  
             lunarGravity: 5.31,        // ft/s^2 (1/6 of Earth)
-            maxThrust: 10000,          // lbf (descent engine max - DPS)
+            maxThrust: 150000,         // lbf (simulation value for proper braking physics)
             dryMass: 9300,             // lbs (LM total dry mass)
             fuelMass: 18000,           // lbs (descent propellant)
         };
