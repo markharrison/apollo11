@@ -19,6 +19,13 @@ class DSKYController {
             r3: document.getElementById('r3-display')
         };
         
+        // Check if all required elements exist
+        for (const [key, element] of Object.entries(this.elements)) {
+            if (!element) {
+                throw new Error(`Required DSKY display element '${key}-display' not found`);
+            }
+        }
+        
         this.statusLights = {
             uplink: document.getElementById('uplink-light'),
             temp: document.getElementById('temp-light'),

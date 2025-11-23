@@ -14,22 +14,27 @@ let lastFrameTime = 0;
 function init() {
     console.log('Initializing Apollo 11 AGC/DSKY Simulation...');
     
-    // Create AGC simulator
-    agc = new AGCSimulator();
-    
-    // Create DSKY controller
-    dsky = new DSKYController(agc);
-    
-    // Create visualization
-    visualization = new LandingVisualization('landing-canvas', agc);
-    
-    // Setup controls
-    setupControls();
-    
-    // Start animation loop
-    startAnimationLoop();
-    
-    console.log('Simulation initialized successfully!');
+    try {
+        // Create AGC simulator
+        agc = new AGCSimulator();
+        
+        // Create DSKY controller
+        dsky = new DSKYController(agc);
+        
+        // Create visualization
+        visualization = new LandingVisualization('landing-canvas', agc);
+        
+        // Setup controls
+        setupControls();
+        
+        // Start animation loop
+        startAnimationLoop();
+        
+        console.log('Simulation initialized successfully!');
+    } catch (error) {
+        console.error('Failed to initialize simulation:', error);
+        alert('Failed to initialize the simulation. Please refresh the page and try again.');
+    }
 }
 
 /**
@@ -40,35 +45,41 @@ function setupControls() {
     const timeSlider = document.getElementById('time-slider');
     const speedDisplay = document.getElementById('speed-display');
     
-    timeSlider.addEventListener('input', (e) => {
-        const multiplier = parseInt(e.target.value);
-        agc.setTimeMultiplier(multiplier);
-        speedDisplay.textContent = multiplier + 'x';
-    });
-    
-    // Keyboard control for time slider
-    timeSlider.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-            e.stopPropagation(); // Prevent DSKY from capturing these keys
-        }
-    });
+    if (timeSlider && speedDisplay) {
+        timeSlider.addEventListener('input', (e) => {
+            const multiplier = parseInt(e.target.value, 10);
+            agc.setTimeMultiplier(multiplier);
+            speedDisplay.textContent = multiplier + 'x';
+        });
+        
+        // Keyboard control for time slider
+        timeSlider.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                e.stopPropagation(); // Prevent DSKY from capturing these keys
+            }
+        });
+        
+        // Make time slider accessible with keyboard
+        timeSlider.setAttribute('tabindex', '0');
+        timeSlider.setAttribute('aria-label', 'Simulation speed control');
+    }
     
     // Reset button
     const resetBtn = document.getElementById('reset-btn');
-    resetBtn.addEventListener('click', () => {
-        resetSimulation();
-    });
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            resetSimulation();
+        });
+    }
     
     // Toggle pause button
     const toggleBtn = document.getElementById('toggle-sim-btn');
-    toggleBtn.addEventListener('click', () => {
-        const isPaused = agc.togglePause();
-        toggleBtn.textContent = isPaused ? 'Resume' : 'Pause';
-    });
-    
-    // Make time slider accessible with keyboard
-    timeSlider.setAttribute('tabindex', '0');
-    timeSlider.setAttribute('aria-label', 'Simulation speed control');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const isPaused = agc.togglePause();
+            toggleBtn.textContent = isPaused ? 'Resume' : 'Pause';
+        });
+    }
 }
 
 /**
