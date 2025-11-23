@@ -160,7 +160,7 @@ Potential improvements:
 
 The original AGC code is in the public domain. This web application implementation is also released under the same public domain dedication in honor of the original Apollo program.
 
-##References
+## References
 
 - [Virtual AGC Project](http://www.ibiblio.org/apollo/)
 - [Apollo 11 Mission](https://www.nasa.gov/mission_pages/apollo/missions/apollo11.html)

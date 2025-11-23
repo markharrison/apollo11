@@ -291,8 +291,8 @@ class AGC {
         this.phase = -1;
         this.program = 0;
         this.altitude = 50000;
-        this.velocity = -5500;
-        this.horizontalVel = 5000;
+        this.velocity = -500;      // Realistic descent rate
+        this.horizontalVel = 400;   // Realistic horizontal velocity
         this.fuel = 100;
         this.throttle = 0;
         this.mass = 33000;

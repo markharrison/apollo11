@@ -19,6 +19,9 @@ class Visualization {
         this.thrustAnimation = 0;
         this.stars = this.generateStars(100);
         
+        // Generate craters once for performance
+        this.craters = this.generateCraters(5);
+        
         // Make canvas responsive
         this.setupResponsive();
     }
@@ -48,6 +51,17 @@ class Visualization {
             });
         }
         return stars;
+    }
+    
+    generateCraters(count) {
+        const craters = [];
+        for (let i = 0; i < count; i++) {
+            craters.push({
+                x: (i + 0.5) * (this.width / count),
+                radius: 20 + Math.random() * 30
+            });
+        }
+        return craters;
     }
     
     draw() {
@@ -92,17 +106,15 @@ class Visualization {
         this.ctx.fillStyle = '#666666';
         this.ctx.fillRect(0, surfaceY, this.width, 100);
         
-        // Draw some craters for detail
+        // Draw pre-generated craters for performance
         this.ctx.strokeStyle = '#555555';
         this.ctx.lineWidth = 2;
         
-        for (let i = 0; i < 5; i++) {
-            const x = (i + 0.5) * (this.width / 5);
-            const radius = 20 + Math.random() * 30;
+        this.craters.forEach(crater => {
             this.ctx.beginPath();
-            this.ctx.arc(x, surfaceY, radius, 0, Math.PI, true);
+            this.ctx.arc(crater.x, surfaceY, crater.radius, 0, Math.PI, true);
             this.ctx.stroke();
-        }
+        });
         
         // Draw horizon line
         this.ctx.strokeStyle = '#888888';
