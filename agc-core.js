@@ -42,6 +42,7 @@ class AGC {
         // Constants
         this.LUNAR_GRAVITY = 5.32;  // ft/s² (moon gravity)
         this.FUEL_FLOW_RATE = 0.08; // % per second at max thrust
+        this.EARTH_GRAVITY = 32.2;  // ft/s² (for mass conversion)
     }
     
     // Initialize for a specific program
@@ -172,8 +173,11 @@ class AGC {
         // Much stronger control gain to aggressively slow down
         const desiredAccel = -velError * 2.0; // Strong control gain
         
-        // Total required thrust: overcome gravity + provide desired acceleration
-        const requiredThrust = this.mass * (this.LUNAR_GRAVITY + desiredAccel);
+        // Convert mass to slugs for force calculation
+        const massInSlugs = this.mass / this.EARTH_GRAVITY;
+        
+        // Total required thrust: (mass_in_slugs) * (g + a_desired)
+        const requiredThrust = massInSlugs * (this.LUNAR_GRAVITY + desiredAccel);
         
         // Set throttle (10% to 100%)
         this.throttle = Math.max(10, Math.min(100, 
@@ -191,8 +195,9 @@ class AGC {
         const targetVel = -Math.sqrt(Math.max(10, this.altitude)) * 1.5 - 10;
         const velError = this.velocity - targetVel;
         
-        const desiredAccel = velError * 0.8;
-        const requiredThrust = this.mass * (this.LUNAR_GRAVITY + desiredAccel);
+        const desiredAccel = -velError * 0.8;
+        const massInSlugs = this.mass / this.EARTH_GRAVITY;
+        const requiredThrust = massInSlugs * (this.LUNAR_GRAVITY + desiredAccel);
         
         this.throttle = Math.max(10, Math.min(100, 
             (requiredThrust / this.maxThrust) * 100));
@@ -215,8 +220,9 @@ class AGC {
         }
         
         const velError = this.velocity - targetVel;
-        const desiredAccel = velError * 1.0;
-        const requiredThrust = this.mass * (this.LUNAR_GRAVITY + desiredAccel);
+        const desiredAccel = -velError * 1.0;
+        const massInSlugs = this.mass / this.EARTH_GRAVITY;
+        const requiredThrust = massInSlugs * (this.LUNAR_GRAVITY + desiredAccel);
         
         this.throttle = Math.max(10, Math.min(100, 
             (requiredThrust / this.maxThrust) * 100));
@@ -232,8 +238,11 @@ class AGC {
         this.thrust = this.minThrust + (this.maxThrust - this.minThrust) * 
                       (this.throttle / 100);
         
-        // Acceleration = (Thrust / Mass) - Gravity
-        const accel = (this.thrust / this.mass) - this.LUNAR_GRAVITY;
+        // Convert mass (lbm) to slugs for F=ma calculation
+        const massInSlugs = this.mass / this.EARTH_GRAVITY;
+        
+        // Acceleration = (Thrust / Mass_in_slugs) - Gravity
+        const accel = (this.thrust / massInSlugs) - this.LUNAR_GRAVITY;
         
         // Update velocity
         this.velocity += accel * dt;
